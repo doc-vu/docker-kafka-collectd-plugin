@@ -268,10 +268,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=TemporaryMemoryBytes,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_TemporaryMemoryBytes",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -292,10 +292,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=MessageConversionsTimeMs,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_MessageConversionsTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -304,10 +304,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=MessageConversionsTimeMs,request=Fetch",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Fetch_MessageConversionsTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -316,10 +316,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_TotalTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -328,10 +328,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchFollower",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchFollower_TotalTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -340,10 +340,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchConsumer",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchConsumer_TotalTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -352,10 +352,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_RequestQueueTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -364,10 +364,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchFollower",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchFollower_RequestQueueTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -376,10 +376,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchConsumer",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchConsumer_RequestQueueTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -388,10 +388,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=LocalTimeMs,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_LocalTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -400,10 +400,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchFollower",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchFollower_LocalTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -412,10 +412,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchConsumer",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchConsumer_LocalTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -424,10 +424,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_RemoteTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -436,10 +436,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=FetchFollower",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchFollower_RemoteTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -448,10 +448,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=FetchConsumer",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchConsumer_RemoteTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -460,10 +460,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=ResponseQueueTimeMs,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_ResponseQueueTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -472,10 +472,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=ResponseQueueTimeMs,request=FetchFollower",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchFollower_ResponseQueueTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -484,10 +484,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=ResponseQueueTimeMs,request=FetchConsumer",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchConsumer_ResponseQueueTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -496,10 +496,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=Produce",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_Produce_ResponseSendTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -508,10 +508,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=FetchFollower",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchFollower_ResponseSendTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -520,10 +520,10 @@
     "ObjectName": "kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=FetchConsumer",
     "Values": [
       {
-        "Type": "gauge",
+        "Type": "counter",
         "InstancePrefix": "network_request_FetchConsumer_ResponseSendTimeMs",
         "Table": false,
-        "Attribute": "Mean"
+        "Attribute": "Count"
       }
     ]
   },
@@ -628,52 +628,40 @@
     "ObjectName": "java.lang:type=Memory",
     "Values": [
       {
-        "Type": "memory",
+        "Type": "gauge",
         "InstancePrefix": "memory_heap_usage_committed",
         "Table": false,
         "Attribute": "HeapMemoryUsage.committed"
       },
       {
-        "Type": "memory",
+        "Type": "gauge",
         "InstancePrefix": "memory_non_heap_usage_committed",
         "Table": false,
         "Attribute": "NonHeapMemoryUsage.committed"
       },
       {
-        "Type": "memory",
+        "Type": "gauge",
         "InstancePrefix": "memory_heap_usage_used",
         "Table": false,
         "Attribute": "HeapMemoryUsage.used"
       },
       {
-        "Type": "memory",
+        "Type": "gauge",
         "InstancePrefix": "memory_non_heap_usage_used",
         "Table": false,
         "Attribute": "NonHeapMemoryUsage.used"
       },
       {
-        "Type": "memory",
+        "Type": "gauge",
         "InstancePrefix": "memory_heap_usage_max",
         "Table": false,
         "Attribute": "HeapMemoryUsage.max"
       },
       {
-        "Type": "memory",
+        "Type": "gauge",
         "InstancePrefix": "memory_non_heap_usage_max",
         "Table": false,
         "Attribute": "NonHeapMemoryUsage.max"
-      }
-    ]
-  },
-  {
-    "MBean": "jvm_localhost_Runtime",
-    "ObjectName": "java.lang:type=Runtime",
-    "Values": [
-      {
-        "Type": "counter",
-        "InstancePrefix": "runtime_uptime",
-        "Table": false,
-        "Attribute": "Uptime"
       }
     ]
   },
