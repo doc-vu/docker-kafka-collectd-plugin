@@ -12,6 +12,10 @@ import subprocess
 import docker
 
 
+def get_cnr_ip():
+    get_pid_cmd = 'docker inspect --format '
+
+
 def locate_kafka_cnr(jmx_port):
     docker_api = docker.from_env()
     cnrs = docker_api.containers.list()
@@ -24,7 +28,9 @@ def locate_kafka_cnr(jmx_port):
         except Exception as ex:
             continue
         else:
-            kafka_cons.append((con.attrs['Name'].replace('/', ''), con.attrs['NetworkSettings']['IPAddress']))
+            cnr_pid = subprocess.check_output("docker inspect --format '{{ .State.Pid }}' %s" % con.short_id, shell=True).decode().strip()
+            cnr_ip = subprocess.check_output("sudo nsenter -t %s -n ip addr | grep inet | awk '{print $2}' | tail -n 1" % cnr_pid, shell=True).decode().strip().split('/')[0]
+            kafka_cons.append((con.attrs['Name'].replace('/', ''), cnr_ip))
     return kafka_cons
 
 
