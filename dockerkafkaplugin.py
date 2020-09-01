@@ -12,10 +12,6 @@ import subprocess
 import docker
 
 
-def get_cnr_ip():
-    get_pid_cmd = 'docker inspect --format '
-
-
 def locate_kafka_cnr(jmx_port):
     docker_api = docker.from_env()
     cnrs = docker_api.containers.list()

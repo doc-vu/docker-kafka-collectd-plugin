@@ -631,37 +631,37 @@
         "Type": "gauge",
         "InstancePrefix": "memory_heap_usage_committed",
         "Table": false,
-        "Attribute": "HeapMemoryUsage.committed"
+        "Attribute": "HeapMemoryUsage/committed"
       },
       {
         "Type": "gauge",
         "InstancePrefix": "memory_non_heap_usage_committed",
         "Table": false,
-        "Attribute": "NonHeapMemoryUsage.committed"
+        "Attribute": "NonHeapMemoryUsage/committed"
       },
       {
         "Type": "gauge",
         "InstancePrefix": "memory_heap_usage_used",
         "Table": false,
-        "Attribute": "HeapMemoryUsage.used"
+        "Attribute": "HeapMemoryUsage/used"
       },
       {
         "Type": "gauge",
         "InstancePrefix": "memory_non_heap_usage_used",
         "Table": false,
-        "Attribute": "NonHeapMemoryUsage.used"
+        "Attribute": "NonHeapMemoryUsage/used"
       },
       {
         "Type": "gauge",
         "InstancePrefix": "memory_heap_usage_max",
         "Table": false,
-        "Attribute": "HeapMemoryUsage.max"
+        "Attribute": "HeapMemoryUsage/max"
       },
       {
         "Type": "gauge",
         "InstancePrefix": "memory_non_heap_usage_max",
         "Table": false,
-        "Attribute": "NonHeapMemoryUsage.max"
+        "Attribute": "NonHeapMemoryUsage/max"
       }
     ]
   },
