@@ -99,7 +99,7 @@ class DockerKafkaMon(threading.Thread):
                 query_obj.append(JMXQuery(mBeanName=mbean['ObjectName'],
                                           attribute=val['Attribute'],
                                           value_type=val['Type'],
-                                          metric_name='%s' % val['InstancePrefix'],
+                                          metric_name='%s' % val['InstancePrefix'].lower(),
                                           metric_labels={'type': val['Type']}))
 
         while not self.stopped():
