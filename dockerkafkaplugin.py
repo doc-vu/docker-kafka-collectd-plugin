@@ -158,7 +158,7 @@ class DockerKafkaMon(threading.Thread):
             jmx_conns = {}
             active_kafka_cons = locate_kafka_cnr(self.connection, self.jmx_port)
             for kc in active_kafka_cons:
-                svc_url = 'service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi' % (kc[1], self.jmx_port)
+                svc_url = 'service:jmx:rmi:///jndi/rmi://%s/jmxrmi' % kc[1]
                 jmx_conns.update({kc[0]: JMXConnection(svc_url)})
             if len(jmx_conns) == 0:
                 continue
