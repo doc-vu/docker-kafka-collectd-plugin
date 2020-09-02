@@ -114,14 +114,17 @@ class DockerKafkaMon(threading.Thread):
                 jmx_conns.update({kc[0]: JMXConnection(svc_url)})
             if len(jmx_conns) == 0:
                 continue
-            threads = [QueryHelper(jmx_conns[cnr].query, args=(query_obj, self.interval, )) for cnr in jmx_conns]
-            [thr.start() for thr in threads]
-            query_results = {}
-            cnrs = list(jmx_conns.keys())
-            for i, cnr in enumerate(cnrs):
-                query_results.update({cnr: threads[i].get_result()})
-            with open(self.tmp_out + '/tmp.out', 'w') as f:
-                pickle.dump(query_results, f)
+            try:
+                threads = [QueryHelper(jmx_conns[cnr].query, args=(query_obj, self.interval, )) for cnr in jmx_conns]
+                [thr.start() for thr in threads]
+                query_results = {}
+                cnrs = list(jmx_conns.keys())
+                for i, cnr in enumerate(cnrs):
+                    query_results.update({cnr: threads[i].get_result()})
+                with open(self.tmp_out + '/tmp.out', 'w') as f:
+                    pickle.dump(query_results, f)
+            except Exception as ex:
+                collectd.error('Failed to query JMX:', ex)
 
     def init_callback(self):
         self.start()
@@ -142,7 +145,6 @@ class DockerKafkaMon(threading.Thread):
                          (plugin, host, type, type_instance, str(value)))
 
     def read_callback(self):
-        failures = 0
         try:
             with open(self.tmp_out + '/tmp.out') as f:
                 results = pickle.load(f)
@@ -151,11 +153,7 @@ class DockerKafkaMon(threading.Thread):
                     self.dispatch_value(plugin=self.plugin_name, plugin_instance=cnr, host=self.hostname,
                                         type=mtr.metric_labels['type'], type_instance=mtr.metric_name, value=mtr.value)
         except Exception as ex:
-            time.sleep(1)
-            failures += 1
-            if failures > 3:
-                collectd.error(('Unable to read docker kafka stats from %s: %s' % (self.hostname, ex)))
-                self.stop()
+            collectd.error(('Unable to read docker kafka stats from %s: %s' % (self.hostname, ex)))
 
     def shutdown_callback(self):
         self.stop()
