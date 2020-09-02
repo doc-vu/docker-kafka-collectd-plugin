@@ -9,43 +9,73 @@ import time
 from jmxquery import JMXConnection, JMXQuery
 import collectd
 import subprocess
+import socket
 import docker
 
 
-def locate_kafka_cnr(jmx_port):
+def get_cnr_ip(con_id):
+    cnr_pid = subprocess.check_output("docker inspect --format '{{ .State.Pid }}' %s" % con_id,
+                                      shell=True).decode().strip()
+    cnr_ip = subprocess.check_output("sudo nsenter -t %s -n ip addr | grep inet | awk '{print $2}' | tail -n 1" % cnr_pid,
+                            shell=True).decode().strip().split('/')[0]
+    return cnr_ip
+
+
+def get_cluster_ip(con_id):
+    try:
+        cnr_env_vars = subprocess.check_output("docker inspect --format '{{ json .Config.Env }}' %s" % con_id,
+                                               shell=True).decode()
+        cnr_env_vars = json.loads(cnr_env_vars)
+        for var in cnr_env_vars:
+            # the output string is in formate: "cluster_ip=xx.xx.xx.xx"
+            if 'cluster_ip' in var:
+                cluster_ip = var.split('=')[1]
+                return cluster_ip
+    except:
+        return get_cnr_ip(con_id)
+
+
+def get_node_forward_addr(con_id, cnr_port):
+    host_ip = socket.gethostbyname(socket.gethostname())
+    try:
+        # K8s
+        cnr_labels = subprocess.check_output("docker inspect --format '{{ json .Config.Labels }}' %s" % con_id,
+                                               shell=True).decode()
+        cnr_labels = json.loads(cnr_labels)
+        for label in cnr_labels:
+            if 'annotation.io.kubernetes.container.ports' in label:
+                for ports in label:
+                    if 'hostPort' in list(ports.keys()):
+                        return host_ip + ':' + ports['hostPort']
+
+        # Docker
+        cnr_ports = subprocess.check_output("docker inspect --format '{{ json .NetworkSettings.Ports }}' %s" % con_id,
+                                            shell=True).decode()
+        cnr_ports = json.loads(cnr_ports)
+        for cp in cnr_ports:
+            if cp.split('/')[0] == str(cnr_port):
+                return host_ip + ':' + cnr_ports[cp][0]['HostPort']
+    except:
+        return get_cnr_ip(con_id) + ':' + str(cnr_port)
+
+
+def locate_kafka_cnr(connection='host_ip', port=9999):
     docker_api = docker.from_env()
     cnrs = docker_api.containers.list()
     kafka_cons = []
     for con in cnrs:
-        check_jvm = "docker exec %s lsof -i :%d | awk '{print $2}' | tail -n 1" % (con.short_id, jmx_port)
+        check_jvm = "docker exec %s lsof -i :%d | awk '{print $2}' | tail -n 1" % (con.short_id, port)
         try:
-            pid = subprocess.check_output(check_jvm, shell=True).decode()
-            pid = int(pid)
+            int(subprocess.check_output(check_jvm, shell=True).decode())
         except Exception as ex:
             continue
         else:
-            """ If Kafka container listens on container IP, we capture the address by inspecting 
-            its network space; but if the container(pod) associates with a Kubernetes Service(ClusterIP), 
-            we explicity write the "cluster_ip" as an environment variable when creating the container.
-            """
-            cnr_env_vars = subprocess.check_output("docker inspect --format '{{ json .Config.Env }}' %s" % con.short_id, shell=True).decode()
-            use_cnr_ip = True
-            try:
-                cnr_env_vars = json.loads(cnr_env_vars)
-                for var in cnr_env_vars:
-                    # the output string is in formate: "cluster_ip=xx.xx.xx.xx"
-                    if 'cluster_ip' in var:
-                        cluster_ip = var.split('=')[1]
-                        kafka_cons.append((con.attrs['Name'].replace('/', ''), cluster_ip))
-                        use_cnr_ip = False
-                        break
-            except Exception as ex:
-                print('Failed to capture cluster_ip, use container ip...')
-            
-            if use_cnr_ip:
-                cnr_pid = subprocess.check_output("docker inspect --format '{{ .State.Pid }}' %s" % con.short_id, shell=True).decode().strip()
-                cnr_ip = subprocess.check_output("sudo nsenter -t %s -n ip addr | grep inet | awk '{print $2}' | tail -n 1" % cnr_pid, shell=True).decode().strip().split('/')[0]
-                kafka_cons.append((con.attrs['Name'].replace('/', ''), cnr_ip))
+            if connection == 'container_ip':
+                kafka_cons.append((con.attrs['Name'].replace('/', ''), get_cnr_ip(con.short_id) + ':' + str(port)))
+            elif connection == 'cluster_ip':
+                kafka_cons.append((con.attrs['Name'].replace('/', ''), get_cluster_ip(con.short_id) + ':' + str(port)))
+            else:
+                kafka_cons.append((con.attrs['Name'].replace('/', ''), get_node_forward_addr(con.short_id, port)))
 
     return kafka_cons
 
@@ -75,7 +105,7 @@ class DockerKafkaMon(threading.Thread):
         self.verbose_logging = False
         self.tmp_out = None
         self.mbeans_file = None
-
+        self.connection = 'host_ip'
         self.jmx_port = 9999
 
     def log_verbose(self, msg):
@@ -98,6 +128,8 @@ class DockerKafkaMon(threading.Thread):
                 self.tmp_out = val
             elif node.key == 'MbeansFile':
                 self.mbeans_file = val
+            elif node.key == 'Connection':
+                self.connection = val
             elif node.key == 'JMX_PORT':
                 self.jmx_port = int(val)
             else:
@@ -124,7 +156,7 @@ class DockerKafkaMon(threading.Thread):
 
         while not self.stopped():
             jmx_conns = {}
-            active_kafka_cons = locate_kafka_cnr(self.jmx_port)
+            active_kafka_cons = locate_kafka_cnr(self.connection, self.jmx_port)
             for kc in active_kafka_cons:
                 svc_url = 'service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi' % (kc[1], self.jmx_port)
                 jmx_conns.update({kc[0]: JMXConnection(svc_url)})
