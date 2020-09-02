@@ -24,9 +24,29 @@ def locate_kafka_cnr(jmx_port):
         except Exception as ex:
             continue
         else:
-            cnr_pid = subprocess.check_output("docker inspect --format '{{ .State.Pid }}' %s" % con.short_id, shell=True).decode().strip()
-            cnr_ip = subprocess.check_output("sudo nsenter -t %s -n ip addr | grep inet | awk '{print $2}' | tail -n 1" % cnr_pid, shell=True).decode().strip().split('/')[0]
-            kafka_cons.append((con.attrs['Name'].replace('/', ''), cnr_ip))
+            """ If Kafka container listens on container IP, we capture the address by inspecting 
+            its network space; but if the container(pod) associates with a Kubernetes Service(ClusterIP), 
+            we explicity write the "cluster_ip" as an environment variable when creating the container.
+            """
+            cnr_env_vars = subprocess.check_output("docker inspect --format '{{ json .Config.Env }}' %s" % con.short_id, shell=True).decode()
+            use_cnr_ip = True
+            try:
+                cnr_env_vars = json.loads(cnr_env_vars)
+                for var in cnr_env_vars:
+                    # the output string is in formate: "cluster_ip=xx.xx.xx.xx"
+                    if 'cluster_ip' in var:
+                        cluster_ip = var.split('=')[1]
+                        kafka_cons.append((con.attrs['Name'].replace('/', ''), cluster_ip))
+                        use_cnr_ip = False
+                        break
+            except Exception as ex:
+                print('Failed to capture cluster_ip, use container ip...')
+            
+            if use_cnr_ip:
+                cnr_pid = subprocess.check_output("docker inspect --format '{{ .State.Pid }}' %s" % con.short_id, shell=True).decode().strip()
+                cnr_ip = subprocess.check_output("sudo nsenter -t %s -n ip addr | grep inet | awk '{print $2}' | tail -n 1" % cnr_pid, shell=True).decode().strip().split('/')[0]
+                kafka_cons.append((con.attrs['Name'].replace('/', ''), cnr_ip))
+
     return kafka_cons
 
 
@@ -99,7 +119,7 @@ class DockerKafkaMon(threading.Thread):
                 query_obj.append(JMXQuery(mBeanName=mbean['ObjectName'],
                                           attribute=val['Attribute'],
                                           value_type=val['Type'],
-                                          metric_name='%s' % val['InstancePrefix'],
+                                          metric_name=val['InstancePrefix'],
                                           metric_labels={'type': val['Type']}))
 
         while not self.stopped():
