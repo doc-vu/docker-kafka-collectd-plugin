@@ -124,7 +124,7 @@ class DockerKafkaMon(threading.Thread):
                 with open(self.tmp_out + '/tmp.out', 'w') as f:
                     pickle.dump(query_results, f)
             except Exception as ex:
-                collectd.error('Failed to query JMX:', ex)
+                collectd.error('Failed to query JMX: %s' % ex)
 
     def init_callback(self):
         self.start()
