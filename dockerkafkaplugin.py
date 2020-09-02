@@ -21,42 +21,42 @@ def get_cnr_ip(con_id):
     return cnr_ip
 
 
-def get_cluster_ip(con_id):
-    try:
-        cnr_env_vars = subprocess.check_output("docker inspect --format '{{ json .Config.Env }}' %s" % con_id,
-                                               shell=True).decode()
-        cnr_env_vars = json.loads(cnr_env_vars)
-        for var in cnr_env_vars:
-            # the output string is in formate: "cluster_ip=xx.xx.xx.xx"
-            if 'cluster_ip' in var:
-                cluster_ip = var.split('=')[1]
-                return cluster_ip
-    except:
-        return get_cnr_ip(con_id)
-
-
-def get_node_forward_addr(con_id, cnr_port):
-    host_ip = socket.gethostbyname(socket.gethostname())
-    try:
-        # K8s
-        cnr_labels = subprocess.check_output("docker inspect --format '{{ json .Config.Labels }}' %s" % con_id,
-                                               shell=True).decode()
-        cnr_labels = json.loads(cnr_labels)
-        for label in cnr_labels:
-            if 'annotation.io.kubernetes.container.ports' in label:
-                for ports in label:
-                    if 'hostPort' in list(ports.keys()):
-                        return host_ip + ':' + ports['hostPort']
-
-        # Docker
-        cnr_ports = subprocess.check_output("docker inspect --format '{{ json .NetworkSettings.Ports }}' %s" % con_id,
-                                            shell=True).decode()
-        cnr_ports = json.loads(cnr_ports)
-        for cp in cnr_ports:
-            if cp.split('/')[0] == str(cnr_port):
-                return host_ip + ':' + cnr_ports[cp][0]['HostPort']
-    except:
-        return get_cnr_ip(con_id) + ':' + str(cnr_port)
+# def get_cluster_ip(con_id):
+#     try:
+#         cnr_env_vars = subprocess.check_output("docker inspect --format '{{ json .Config.Env }}' %s" % con_id,
+#                                                shell=True).decode()
+#         cnr_env_vars = json.loads(cnr_env_vars)
+#         for var in cnr_env_vars:
+#             # the output string is in formate: "cluster_ip=xx.xx.xx.xx"
+#             if 'cluster_ip' in var:
+#                 cluster_ip = var.split('=')[1]
+#                 return cluster_ip
+#     except:
+#         return get_cnr_ip(con_id)
+#
+#
+# def get_node_forward_addr(con_id, cnr_port):
+#     host_ip = socket.gethostbyname(socket.gethostname())
+#     try:
+#         # K8s
+#         cnr_labels = subprocess.check_output("docker inspect --format '{{ json .Config.Labels }}' %s" % con_id,
+#                                                shell=True).decode()
+#         cnr_labels = json.loads(cnr_labels)
+#         for label in cnr_labels:
+#             if 'annotation.io.kubernetes.container.ports' in label:
+#                 for ports in label:
+#                     if 'hostPort' in list(ports.keys()):
+#                         return host_ip + ':' + ports['hostPort']
+#
+#         # Docker
+#         cnr_ports = subprocess.check_output("docker inspect --format '{{ json .NetworkSettings.Ports }}' %s" % con_id,
+#                                             shell=True).decode()
+#         cnr_ports = json.loads(cnr_ports)
+#         for cp in cnr_ports:
+#             if cp.split('/')[0] == str(cnr_port):
+#                 return host_ip + ':' + cnr_ports[cp][0]['HostPort']
+#     except:
+#         return get_cnr_ip(con_id) + ':' + str(cnr_port)
 
 
 def locate_kafka_cnr(connection='host_ip', port=9999):
@@ -70,12 +70,14 @@ def locate_kafka_cnr(connection='host_ip', port=9999):
         except Exception as ex:
             continue
         else:
-            if connection == 'container_ip':
-                kafka_cons.append((con.attrs['Name'].replace('/', ''), get_cnr_ip(con.short_id) + ':' + str(port)))
-            elif connection == 'cluster_ip':
-                kafka_cons.append((con.attrs['Name'].replace('/', ''), get_cluster_ip(con.short_id) + ':' + str(port)))
-            else:
-                kafka_cons.append((con.attrs['Name'].replace('/', ''), get_node_forward_addr(con.short_id, port)))
+            # if connection == 'container_ip':
+            #     kafka_cons.append((con.attrs['Name'].replace('/', ''), get_cnr_ip(con.short_id) + ':' + str(port)))
+            # elif connection == 'cluster_ip':
+            #     kafka_cons.append((con.attrs['Name'].replace('/', ''), get_cluster_ip(con.short_id) + ':' + str(port)))
+            # else:
+            #     kafka_cons.append((con.attrs['Name'].replace('/', ''), get_node_forward_addr(con.short_id, port)))
+
+            kafka_cons.append((con.attrs['Name'].replace('/', ''), get_cnr_ip(con.short_id) + ':' + str(port)))
 
     return kafka_cons
 
