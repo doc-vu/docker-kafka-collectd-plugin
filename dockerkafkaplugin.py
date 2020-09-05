@@ -158,6 +158,9 @@ handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+# handler = logging.FileHandler('/usr/share/collectd/docker-kafka-collectd-plugin')
+# handler.setFormatter(formatter)
+# logger.addHandler(handler)
 
 
 if __name__ == '__main__':
